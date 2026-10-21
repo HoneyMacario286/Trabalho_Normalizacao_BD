@@ -1,0 +1,367 @@
+# UNIVERSIDADE LICUNGO
+
+**FACULDADE DE CIÊNCIAS E TECNOLOGIAS**
+
+**LICENCIATURA EM INFORMÁTICA**
+
+<br>
+
+# TRABALHO II
+
+## NORMALIZAÇÃO DE BASE DE DADOS
+
+### Sistema de Gestão de Funcionários
+
+<br>
+
+**Estudante:** Honey Macario
+
+**Docente:** Daniel Gimo
+
+**Ano:** 2026
+
+---
+
+# 1. INTRODUÇÃO
+
+A normalização de bases de dados é um processo de organização dos dados em tabelas relacionadas, com o objetivo de reduzir a duplicação de informações, evitar anomalias de inserção, atualização e eliminação e garantir a consistência dos dados.
+
+O presente trabalho aborda a normalização de uma base de dados destinada à gestão de funcionários. O processo consiste em analisar a tabela inicial, identificar os problemas existentes e organizar os dados em diferentes tabelas, aplicando as quatro formas normais: Primeira Forma Normal (1FN), Segunda Forma Normal (2FN), Terceira Forma Normal (3FN) e Quarta Forma Normal (4FN).
+
+# 2. OBJECTIVOS
+
+## 2.1. Objectivo geral
+
+Normalizar a base de dados do Sistema de Gestão de Funcionários até à Quarta Forma Normal (4FN).
+
+## 2.2. Objectivos específicos
+
+- Identificar os problemas da tabela não normalizada.
+- Aplicar as formas normais 1FN, 2FN, 3FN e 4FN.
+- Identificar as dependências funcionais.
+- Definir as chaves primárias e estrangeiras.
+- Elaborar o modelo relacional e o diagrama entidade-relacionamento.
+- Implementar as tabelas utilizando SQL.
+- Realizar consultas através de JOIN.
+
+# 3. ANÁLISE DA TABELA NÃO NORMALIZADA (0FN)
+
+A tabela inicial contém informações pessoais, profissionais, geográficas e familiares dos funcionários. Apresenta também colunas repetidas para registar filhos e números de telefone.
+
+### Tabela 1 — Organização dos campos iniciais
+
+| Grupo de informação | Campos existentes |
+|---|---|
+| Identificação pessoal | Nome, Data Nasc., NUIT, BI, Email |
+| Localização | Endereço, Cidade, Província, País |
+| Informação profissional | Cargo, Cód. Cargo, Função, Cód. Função, Posto de Trabalho, Data Admissão |
+| Filhos | Filho 1, Filho 2, Filho 3 |
+| Contactos | Celular 1, Celular 2, Celular 3 |
+
+**Problemas identificados:**
+
+1. Existência de grupos repetidos, como Filho 1, Filho 2 e Filho 3.
+2. Repetição de números de telefone em diferentes colunas.
+3. Possibilidade de duplicação de informações.
+4. Dificuldade de inserir novos filhos ou contactos sem alterar a estrutura da tabela.
+5. Possibilidade de inconsistências durante a atualização ou eliminação de dados.
+
+*Nota: a tabela original completa, com os 16 funcionários, deve ser apresentada ou anexada conforme os dados fornecidos pelo docente.*
+
+# 4. PRIMEIRA FORMA NORMAL (1FN)
+
+A Primeira Forma Normal exige que cada campo contenha apenas um valor e que não existam grupos repetidos de colunas.
+
+Para cumprir esta forma normal, os dados dos funcionários são organizados de maneira que os filhos e os contactos sejam registados individualmente, em tabelas próprias.
+
+### Tabela 2 — Separação dos grupos repetidos
+
+| Tabela | Finalidade |
+|---|---|
+| Funcionario | Armazenar os dados pessoais e as referências profissionais do funcionário. |
+| Filho | Armazenar os filhos associados a cada funcionário. |
+| Telefone | Armazenar os números de telefone associados a cada funcionário. |
+
+Desta forma, um funcionário pode ter vários filhos e vários contactos sem ser necessário criar novas colunas na tabela principal.
+
+# 5. SEGUNDA FORMA NORMAL (2FN)
+
+A Segunda Forma Normal exige que a tabela esteja na 1FN e que todos os atributos não-chave dependam da chave primária completa.
+
+No modelo proposto, cada entidade possui uma chave primária própria, permitindo identificar individualmente cada registo. Os atributos são organizados de acordo com a entidade a que pertencem.
+
+Por exemplo, o nome de um cargo depende do identificador do cargo, enquanto os dados pessoais dependem do identificador do funcionário.
+
+Esta organização reduz a repetição de informações e evita dependências parciais.
+
+# 6. TERCEIRA FORMA NORMAL (3FN)
+
+A Terceira Forma Normal exige que a tabela esteja na 2FN e que não existam dependências transitivas inadequadas entre atributos não-chave.
+
+No sistema em análise, os dados geográficos e profissionais são separados em tabelas próprias. Assim, a informação relativa a países, províncias, cidades, cargos, funções e postos de trabalho não precisa de ser repetida integralmente em cada registo de funcionário.
+
+### Tabela 3 — Tabelas auxiliares na 3FN
+
+| Tabela | Chave primária (PK) | Informação armazenada |
+|---|---|---|
+| Pais | id_pais | Nome do país |
+| Provincia | id_provincia | Nome da província e país correspondente |
+| Cidade | id_cidade | Nome da cidade e província correspondente |
+| Cargo | id_cargo | Designação do cargo |
+| Funcao | id_funcao | Designação da função |
+| Posto_Trabalho | id_posto | Designação do posto de trabalho |
+
+A separação destas informações melhora a consistência dos dados e facilita a manutenção da base de dados.
+
+# 7. QUARTA FORMA NORMAL (4FN)
+
+A Quarta Forma Normal trata as dependências multivaloradas independentes. Neste sistema, um funcionário pode ter vários filhos e vários números de telefone, sendo estes dois conjuntos de informações independentes entre si.
+
+Se os filhos e os telefones fossem armazenados juntos numa única tabela, poderiam surgir combinações desnecessárias entre os dois conjuntos de dados.
+
+Por isso, são utilizadas duas tabelas distintas.
+
+### Tabela 4 — Estrutura das tabelas multivaloradas
+
+| Tabela | Chave primária (PK) | Chave estrangeira (FK) |
+|---|---|---|
+| Filho | id_filho | id_funcionario |
+| Telefone | id_telefone | id_funcionario |
+
+Esta separação permite registar vários filhos e vários contactos por funcionário, sem criar combinações artificiais entre eles.
+
+# 8. MODELO RELACIONAL FINAL
+
+O modelo relacional representa as tabelas da base de dados, os seus atributos e as relações estabelecidas através das chaves primárias e estrangeiras.
+
+### Tabela 5 — Modelo relacional
+
+| Tabela | Chave primária (PK) | Chaves estrangeiras (FK) |
+|---|---|---|
+| Pais | id_pais | — |
+| Provincia | id_provincia | id_pais |
+| Cidade | id_cidade | id_provincia |
+| Cargo | id_cargo | — |
+| Funcao | id_funcao | — |
+| Posto_Trabalho | id_posto | — |
+| Funcionario | id_funcionario | id_cidade, id_cargo, id_funcao, id_posto |
+| Filho | id_filho | id_funcionario |
+| Telefone | id_telefone | id_funcionario |
+
+**Legenda:**
+
+- **PK (Primary Key):** chave primária que identifica unicamente cada registo.
+- **FK (Foreign Key):** chave estrangeira que estabelece a ligação entre tabelas.
+- **1:N:** relação de um para muitos.
+
+## 8.1. Representação textual do modelo relacional
+
+```text
+PAIS(
+    id_pais PK,
+    nome_pais
+)
+
+PROVINCIA(
+    id_provincia PK,
+    nome_provincia,
+    id_pais FK
+)
+
+CIDADE(
+    id_cidade PK,
+    nome_cidade,
+    id_provincia FK
+)
+
+CARGO(
+    id_cargo PK,
+    nome_cargo
+)
+
+FUNCAO(
+    id_funcao PK,
+    nome_funcao
+)
+
+POSTO_TRABALHO(
+    id_posto PK,
+    nome_posto
+)
+
+FUNCIONARIO(
+    id_funcionario PK,
+    nome,
+    data_nascimento,
+    nuit,
+    bi,
+    email,
+    endereco,
+    data_admissao,
+    id_cidade FK,
+    id_cargo FK,
+    id_funcao FK,
+    id_posto FK
+)
+
+FILHO(
+    id_filho PK,
+    nome_filho,
+    id_funcionario FK
+)
+
+TELEFONE(
+    id_telefone PK,
+    numero_telefone,
+    id_funcionario FK
+)
+```
+
+# 9. DEPENDÊNCIAS FUNCIONAIS
+
+Uma dependência funcional ocorre quando um atributo ou conjunto de atributos determina o valor de outro atributo.
+
+### Tabela 6 — Dependências funcionais
+
+| Dependência funcional | Interpretação |
+|---|---|
+| id_funcionario → dados pessoais | O identificador determina os dados pessoais do funcionário. |
+| id_cargo → nome_cargo | O identificador determina o nome do cargo. |
+| id_funcao → nome_funcao | O identificador determina o nome da função. |
+| id_pais → nome_pais | O identificador determina o nome do país. |
+| id_provincia → nome_provincia, id_pais | O identificador determina a província e o país a que pertence. |
+| id_cidade → nome_cidade, id_provincia | O identificador determina a cidade e a província correspondente. |
+| id_filho → id_funcionario, nome_filho | O identificador do filho determina o respetivo registo e funcionário associado. |
+| id_telefone → id_funcionario, numero_telefone | O identificador do telefone determina o número e o funcionário associado. |
+
+Estas dependências ajudam a identificar os atributos que devem pertencer a cada tabela e a reduzir a redundância.
+
+# 10. RELACIONAMENTOS E CARDINALIDADES
+
+A cardinalidade indica o número de registos de uma tabela que podem estar associados aos registos de outra tabela.
+
+### Tabela 7 — Cardinalidades do sistema
+
+| Relacionamento | Cardinalidade | Explicação |
+|---|---|---|
+| País — Província | 1:N | Um país pode possuir várias províncias. |
+| Província — Cidade | 1:N | Uma província pode possuir várias cidades. |
+| Cidade — Funcionário | 1:N | Uma cidade pode estar associada a vários funcionários. |
+| Cargo — Funcionário | 1:N | Um cargo pode estar associado a vários funcionários. |
+| Função — Funcionário | 1:N | Uma função pode ser desempenhada por vários funcionários. |
+| Posto de trabalho — Funcionário | 1:N | Um posto pode estar associado a vários funcionários. |
+| Funcionário — Filho | 1:N | Um funcionário pode ter vários filhos registados. |
+| Funcionário — Telefone | 1:N | Um funcionário pode ter vários números de telefone. |
+
+# 11. DIAGRAMA ENTIDADE-RELACIONAMENTO (DER)
+
+O diagrama entidade-relacionamento representa graficamente as entidades da base de dados e os relacionamentos existentes entre elas.
+
+O sistema contém nove entidades principais: Pais, Provincia, Cidade, Cargo, Funcao, Posto_Trabalho, Funcionario, Filho e Telefone.
+
+As relações são estabelecidas através das chaves estrangeiras. Por exemplo, a tabela Funcionario contém referências às tabelas Cidade, Cargo, Funcao e Posto_Trabalho. As tabelas Filho e Telefone estão relacionadas com Funcionario através de id_funcionario.
+
+**Inserir nesta secção a imagem do diagrama ER**, guardada no projeto com o nome `Modelo_ER.png`.
+
+# 12. IMPLEMENTAÇÃO DA BASE DE DADOS EM SQL
+
+A implementação SQL permite criar a base de dados, definir as tabelas, estabelecer as chaves e inserir os dados dos funcionários.
+
+### Tabela 8 — Organização dos ficheiros SQL
+
+| Ficheiro | Finalidade |
+|---|---|
+| 01_criar_base_dados.sql | Criar a base de dados. |
+| 02_criar_tabelas.sql | Criar as tabelas e definir PK e FK. |
+| 03_inserir_dados.sql | Inserir os registos dos funcionários e restantes entidades. |
+| 04_consultas_JOIN.sql | Executar consultas para obter informações relacionadas. |
+
+## 12.1. Consulta de funcionários e respetivos cargos
+
+```sql
+SELECT f.nome, c.nome_cargo
+FROM Funcionario AS f
+INNER JOIN Cargo AS c
+    ON f.id_cargo = c.id_cargo;
+```
+
+Esta consulta apresenta o nome de cada funcionário e o respetivo cargo.
+
+## 12.2. Consulta de funcionários e localização
+
+```sql
+SELECT f.nome,
+       ci.nome_cidade,
+       pr.nome_provincia,
+       pa.nome_pais
+FROM Funcionario AS f
+INNER JOIN Cidade AS ci
+    ON f.id_cidade = ci.id_cidade
+INNER JOIN Provincia AS pr
+    ON ci.id_provincia = pr.id_provincia
+INNER JOIN Pais AS pa
+    ON pr.id_pais = pa.id_pais;
+```
+
+Esta consulta combina quatro tabelas para apresentar os dados de localização dos funcionários.
+
+## 12.3. Consulta de funcionários e respetivos filhos
+
+```sql
+SELECT f.nome, fi.nome_filho
+FROM Funcionario AS f
+INNER JOIN Filho AS fi
+    ON f.id_funcionario = fi.id_funcionario;
+```
+
+Esta consulta apresenta os funcionários e os filhos registados na base de dados.
+
+**Nota técnica:** os nomes das colunas utilizados nas consultas devem corresponder exatamente aos nomes definidos nos ficheiros SQL do projeto.
+
+# 13. VANTAGENS DA NORMALIZAÇÃO
+
+A normalização da base de dados apresenta várias vantagens:
+
+1. Reduz a duplicação de informações.
+2. Melhora a consistência e a integridade dos dados.
+3. Facilita a inserção, atualização e eliminação de registos.
+4. Permite registar vários filhos e contactos sem criar colunas repetidas.
+5. Organiza as relações entre as entidades.
+6. Facilita a recuperação de informações através de consultas SQL e JOIN.
+
+# 14. CONCLUSÃO
+
+Conclui-se que a normalização da base de dados do Sistema de Gestão de Funcionários permite organizar a informação em tabelas relacionadas, reduzindo a redundância e prevenindo anomalias de inserção, atualização e eliminação.
+
+A aplicação das formas normais contribui para uma estrutura mais organizada e consistente. A separação dos dados pessoais, profissionais, geográficos, familiares e dos contactos permite uma gestão mais eficiente da informação.
+
+Por fim, a implementação em SQL e a utilização de consultas JOIN demonstram como os dados podem ser armazenados e consultados de forma estruturada.
+
+# 15. ESTRUTURA DOS FICHEIROS DO PROJETO
+
+A estrutura do projeto pode ser organizada da seguinte forma:
+
+```text
+Trabalho_Normalizacao_BD/
+│
+├── documentos/
+│   └── Relatorio_Normalizacao.docx
+│
+├── diagramas/
+│   ├── Modelo_ER.png
+│   └── Modelo_Relacional.md
+│
+├── sql/
+│   ├── 01_criar_base_dados.sql
+│   ├── 02_criar_tabelas.sql
+│   ├── 03_inserir_dados.sql
+│   └── 04_consultas_JOIN.sql
+│
+└── README.md
+```
+
+Esta organização permite separar o relatório, os diagramas e os ficheiros SQL, facilitando a consulta e a manutenção do projeto.
+
+# 16. REFERÊNCIA
+
+Universidade Licungo. (2026). *Enunciado do Trabalho II — Normalização de Base de Dados: Sistema de Gestão de Funcionários*.
